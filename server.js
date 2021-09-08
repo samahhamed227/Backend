@@ -34,7 +34,7 @@ Server.get("/weather", (req, res) => {
      
       return new Forecast(item.datetime, item.weather.description);
     });
-
+console.log(searchquery);
     
     if (searchquery.length) {
       res.json(searchquery);
