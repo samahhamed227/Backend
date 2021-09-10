@@ -1,82 +1,98 @@
 "use strict";
-
-const express = require("express");
-const Server = express();
-const cors = require("cors");
-Server.use(cors());
-const PORT = process.env.PORT || 3003;
-const weather = require("./data/weather.json");
 require("dotenv").config();
+const express = require("express");
+const app = express();
+const cors = require("cors");
+const axios = require("axios");
+app.use(cors());
 
-Server.get("/", function (req, res) {
-  res.send("Hello World in the home");
-});
 
+//start
 class Forecast {
-  constructor(date, description) {
-    this.date = date;
+  constructor(description, date) {
     this.description = description;
+    this.date = date;
+   
   }
 }
-//http://localhost:3003/weather?city_name=amman
-Server.get("/weather", (req, res) => {
-  console.log(req.query);
-  const cityName = req.query.city_name;
 
 
+class Movies {
+  constructor(element) {
+    this.title = element.title;
+    this.overview = element.overview;
+    this.vote = element.vote;
+    this.count = element.count;
+    this.img =element. img;
+    this.popularity=element.popularity;
+    this.release_date=element.release_date;
+  }
+}
 
-  if (cityName) {
-    const returnArray = weather.find((item) => {
-      return item.city_name.toLowerCase() === cityName;
-    });
+app.get("/", function (request, response) {
+  response.send(
+    "you are in the home"
+  );
+});
+
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+
+app.get("/weather", async (request, response) => {
+ 
+  const city_name = request.query.city;
+  
+  const link = "https://api.weatherbit.io/v2.0/forecast/daily";
+  const linkResponse = await axios.get(
+    `${link}?city=${city_name}&key=${WEATHER_API_KEY}`
+  );
+
+  
+
+  if (city_name) {
    
-    let searchquery=returnArray.data.map((item) => {
-     
-      return new Forecast(item.datetime, item.weather.description);
+    let weatherAraay = linkResponse.data.data.map((item) => {
+      
+      return new Forecast( item.weather.description, item.datetime    );
     });
-console.log(searchquery);
-    
-    if (searchquery.length) {
-      res.json(searchquery);
+
+    if (weatherAraay.length) {
+      response.json(weatherAraay);
+     
     } else {
-      res.send(" 404  error ");
+      response.send("No data.");
     }
   } else {
-    res.json(weather);
+    response.json("Error");
   }
 });
 
+const MOVIES_API_KEY = process.env.MOVIE_key;
 
-Server.listen(PORT, () => {});
+app.get("/movies", async (request, response) => {
+ 
+  const city_name = request.query.query;
 
+  const link = "https://api.themoviedb.org/3/search/movie";
+  const linkResponse = await axios.get(
+    `${link}?query=${city_name}&api_key=${MOVIES_API_KEY}`
+  );
 
+  if (city_name) {
+    
+    let movieArray = linkResponse.data.results.map((item) => {
+     
+      return new Movies(item  );
+    });
 
+    if (movieArray.length) {
+      response.json(movieArray);
+    } else {
+      response.send("No data.");
+    }
+  } else {
+    response.json("Error");
+  }
+});
 
-
-
-
-
-
-
-
-//   let searchquery = weather.find((item) => {
-//     return   (item.city_name === CityName) 
-
-//   });
-//   if (searchquery) {
-//     let newarray = searchquery.data.map((item) => {
-//       return new Forecast(item.datetime, item.weather.description);
-//     });
-//     res.json(newarray);
-//   }
-
-//   console.log(searchquery);
-// });
-
-// Server.get("*", (require, res) => {
-//   res.send("not found");
-// });
-
-// Server.listen(PORT, () => {
-//   console.log(`Server started on port${PORT}`);
-// });
+let port = process.env.PORT || 3003;
+app.listen(port, () => {});
