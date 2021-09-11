@@ -4,6 +4,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const axios = require("axios");
+let PORT = process.env.PORT ;
 app.use(cors());
 
 
@@ -23,10 +24,9 @@ class Movies {
     this.overview = element.overview;
     this.vote = element.vote;
     this.count = element.count;
-    this.img =element. img;
     this.popularity=element.popularity;
     this.release_date=element.release_date;
-    this.image_url = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
+    this.img_url = `https://image.tmdb.org/t/p/w500${element.poster_path}`;
 
   }
 }
@@ -96,5 +96,5 @@ app.get("/movies", async (request, response) => {
   }
 });
 
-let port = process.env.PORT || 3003;
-app.listen(port, () => {});
+
+app.listen(PORT, () => {});
