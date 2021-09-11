@@ -26,6 +26,8 @@ class Movies {
     this.img =element. img;
     this.popularity=element.popularity;
     this.release_date=element.release_date;
+    this.image_url = `https://image.tmdb.org/t/p/w500${item.poster_path}`;
+
   }
 }
 
