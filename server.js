@@ -47,7 +47,13 @@ console.log(searchquery);
 });
 
 
-Server.listen(PORT, () => {});
+Server.get("*", (require, res) => {
+  res.send("not found");
+});
+
+Server.listen(PORT, () => {
+  console.log(`Server started on port${PORT}`);
+});
 
 
 
